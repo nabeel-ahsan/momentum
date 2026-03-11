@@ -95,3 +95,22 @@ The current MVP focuses on delivering the core functionality of the application.
 - User can **view sessions in a table format**
 
 The goal of the MVP is to demonstrate the full data flow:
+
+>  Frontend Form → API Request → Database → Data Display
+---
+
+
+# Future Improvements
+
+Several features can be added in future iterations to enhance the application.
+
+### Planned Enhancements
+
+- **Duration-based filtering** for sessions
+- **Type-based categorization** to organize sessions
+- Improved session analytics and insights
+- Better UI/UX improvements for session management
+
+These additions would help transform the application from a basic tracker into a more useful productivity tool.
+
+---
