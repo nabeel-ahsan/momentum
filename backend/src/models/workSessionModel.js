@@ -30,6 +30,6 @@ const workSessionSchema = mongoose.Schema(
   },
 );
 
-const WorkSessionModel = mongoose.model("WorkSessionModel", workSessionSchema);
+const WorkSession = mongoose.model("WorkSession", workSessionSchema);
 
-export default WorkSessionModel;
+export default WorkSession;
