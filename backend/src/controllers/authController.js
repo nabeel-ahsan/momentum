@@ -1,9 +1,9 @@
+import "dotenv/config";
 import User from "../models/userModel.js";
 import z from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { UserSchema } from "../validators/authValidator.js";
-import "dotenv/config";
 
 export const signUp = async (req, res) => {
   const result = UserSchema.safeParse(req.body);
@@ -44,6 +44,8 @@ export const login = async (req, res) => {
       name: user.name,
       email: user.email,
     };
+    console.log("JWT SECRET: ", process.env.JWT_SECRET);
+    
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "1h",
