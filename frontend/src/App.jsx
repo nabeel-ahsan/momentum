@@ -1,4 +1,5 @@
 import React from "react";
+import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ListSessions from "./pages/ListSessions";
 import LogIn from "./pages/LogIn";
