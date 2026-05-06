@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -8,6 +9,7 @@ const Register = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
 
+  const navigate = useNavigate()
   const postData = async () => {
     const url = "http://localhost:3000/auth/signup";
     try{
@@ -24,6 +26,7 @@ const Register = () => {
         "Content-type": "application/json; charset=UTF-8",
       },
     });
+    console.log(response.status);
     const data = await response.json();
     if(response.ok){
       setSubmitted(true)
@@ -31,6 +34,7 @@ const Register = () => {
       setName("")
       setEmail("")
       setPassword("")
+      navigate('/login')
     }
     else {
       alert(data.message || "Error creating user!")
@@ -80,9 +84,7 @@ const Register = () => {
     e.preventDefault();
     if (validateForm()) {
       await postData();
-    } else {
-      errorMessage();
-    }
+    } 
   };
 
   const successMessage = () => {

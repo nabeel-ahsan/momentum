@@ -3,10 +3,10 @@ import User from "../models/userModel.js";
 import z from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { UserSchema } from "../validators/authValidator.js";
+import { RegisterSchema, LoginSchema } from "../validators/authValidator.js";
 
 export const signUp = async (req, res) => {
-  const result = UserSchema.safeParse(req.body);
+  const result = RegisterSchema.safeParse(req.body);
   if (!result.success) {
     console.log(result.error);
     const error = z.prettifyError(result.error);
@@ -17,12 +17,14 @@ export const signUp = async (req, res) => {
   const user = { name, email, password };
   const newUser = new User(user);
   await newUser.save();
-  res.send("User created successfully!");
+  res.status(201).json({
+  message: "User created successfully"
+});
 };
 
 export const login = async (req, res) => {
   try {
-    const result = UserSchema.safeParse(req.body);
+    const result = LoginSchema.safeParse(req.body);
     if (!result.success) {
       console.log(result.error);
       const error = z.prettifyError(result.error);
@@ -31,12 +33,12 @@ export const login = async (req, res) => {
     const { email, password } = result.data;
     const user = await User.findOne({ email: email }).select("+password");
     if (!user) {
-      return res.send("Invalid Credentials!");
+      return res.json({message: "Invalid Credentials!"});
     }
     const match = await bcrypt.compare(password, user.password);
     console.log(match);
     if (!match) {
-      return res.send("Invalid Credentials!");
+      return res.json({message: "Invalid Credentials!"});
     }
 
     const payload = {
