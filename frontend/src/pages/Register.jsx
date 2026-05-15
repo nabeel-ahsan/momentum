@@ -1,81 +1,79 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  // const [submitted, setSubmitted] = useState(false);
+  // const [error, setError] = useState(false);
 
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState(false);
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const postData = async () => {
+    setLoading(true);
     const url = "http://localhost:3000/auth/signup";
-    try{
-    const response = await fetch(url, {
-      method: "POST",
+    try {
+      const response = await fetch(url, {
+        method: "POST",
 
-      body: JSON.stringify({
-        name: name,
-        email: email,
-        password: password,
-      }),
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+        }),
 
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    });
-    console.log(response.status);
-    const data = await response.json();
-    if(response.ok){
-      setSubmitted(true)
-      setError(false)
-      setName("")
-      setEmail("")
-      setPassword("")
-      navigate('/login')
-    }
-    else {
-      alert(data.message || "Error creating user!")
-    }
-    }
-    catch(error){
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+        },
+      });
+      console.log(response.status);
+      const data = await response.json();
+      if (response.ok) {
+        toast.success(`${name} successfully registered`);
+        setName("");
+        setEmail("");
+        setPassword("");
+
+        navigate("/login");
+      } else {
+        alert(data.message || "Error creating user!");
+      }
+    } catch (error) {
       console.error("Error: ", error);
-      alert("Error occured!")
+      alert("Error occured!");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleName = (e) => {
     setName(e.target.value);
-    setSubmitted(false);
   };
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
-    setSubmitted(false);
   };
 
   const handlePassword = (e) => {
     setPassword(e.target.value);
-    setSubmitted(false);
   };
 
   const validateForm = () => {
     if (name === "" || email === "" || password === "") {
-      setError(true);
+      toast.error("Invalid Form Input!");
 
       return false;
     } else if (!email.includes("@")) {
-      setError(true);
+      toast.error("Invalid Form Input!");
 
       return false;
     } else if (password.length < 6) {
-      setError(true);
+      toast.error("Invalid Form Input!");
 
       return false;
     } else {
-      setError(false);
       return true;
     }
   };
@@ -84,44 +82,32 @@ const Register = () => {
     e.preventDefault();
     if (validateForm()) {
       await postData();
-    } 
+    }
   };
 
-  const successMessage = () => {
-    return (
-      <div
-        className="success"
-        style={{
-          display: submitted ? "" : "none",
-        }}
-      >
-        <h1>User {name} successfully registered!!</h1>
-      </div>
-    );
-  };
+  // const successMessage = () => {
+  //   return (
+  //     toast.success(`${name} successfully registered`)
+  //   );
+  // };
 
-  const errorMessage = () => {
-    return (
-      <div
-        className="error"
-        style={{
-          display: error ? "" : "none",
-        }}
-      >
-        <h1>Please enter all the fields</h1>
-      </div>
-    );
-  };
+  // const errorMessage = () => {
+  //   return (
+  //     <div
+  //       className="error"
+  //       style={{
+  //         display: error ? "" : "none",
+  //       }}
+  //     >
+  //       <h1>Please enter all the fields</h1>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div className="form">
       <div>
         <h1>User Registration</h1>
-      </div>
-
-      <div className="messages">
-        {errorMessage()}
-        {successMessage()}
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -131,6 +117,7 @@ const Register = () => {
           className="input"
           value={name}
           type="text"
+          placeholder="John Doe"
         />
 
         <label className="label">Email</label>
@@ -139,6 +126,7 @@ const Register = () => {
           className="input"
           value={email}
           type="email"
+          placeholder="johndoe@example.com"
         />
 
         <label className="label">Password</label>
@@ -147,10 +135,11 @@ const Register = () => {
           className="input"
           value={password}
           type="password"
+          placeholder="must be atleast 6 characters"
         />
 
-        <button className="btn" type="submit">
-          Submit
+        <button className="btn" type="submit" disabled={loading}>
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>

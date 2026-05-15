@@ -8,21 +8,32 @@ export function useAuth() {
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken]= useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getUser = JSON.parse(localStorage.getItem("user"));
-    setUser(getUser);
-  }, []);
+  const storedToken = localStorage.getItem("token");
+  const storedUser = localStorage.getItem("user");
+  if (storedToken && storedUser) {
+    setToken(storedToken);
+    setUser(JSON.parse(storedUser));
+  }
+  setLoading(false)
+}, []);
 
+if (loading) return <div>loading...</div>
   const login = (loggedInUser, token) => {
     localStorage.setItem("user", JSON.stringify(loggedInUser));
     localStorage.setItem("token", JSON.stringify(token));
     setUser(loggedInUser);
+    setToken(token)
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null)
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (
