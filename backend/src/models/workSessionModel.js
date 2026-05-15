@@ -4,10 +4,12 @@ const workSessionSchema = mongoose.Schema(
   {
     type: {
       type: String,
+      enum: ['DSA', 'Dev', 'Applications', 'Learning', 'Other'],
       required: true,
     },
     status: {
       type: String,
+      enum: ['Completed', 'In Progress'],
       required: true,
     },
     title: {
@@ -24,6 +26,11 @@ const workSessionSchema = mongoose.Schema(
     link: {
       type: String,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    }
   },
   {
     timestamps: true,
