@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import router from './src/routes/authRoute.js'
+import authRouter from './src/routes/authRoute.js'
+import sessionRouter from './src/routes/sessionRoute.js'
 import { authMiddleware } from "./src/middleware/authMiddleware.js";
 
 
@@ -12,6 +13,7 @@ app.get('/test', authMiddleware, (req, res)=> {
     res.json({user: req.user})
 })
 
-app.use("/auth", router);
+app.use("/auth", authRouter);
+app.use("/sessions", sessionRouter);
 
 export default app;
