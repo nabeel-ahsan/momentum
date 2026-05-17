@@ -24,7 +24,7 @@ const AuthProvider = ({ children }) => {
 if (loading) return <div>loading...</div>
   const login = (loggedInUser, token) => {
     localStorage.setItem("user", JSON.stringify(loggedInUser));
-    localStorage.setItem("token", JSON.stringify(token));
+    localStorage.setItem("token", token); 
     setUser(loggedInUser);
     setToken(token)
   };

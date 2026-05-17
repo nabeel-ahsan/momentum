@@ -12,8 +12,7 @@ const AddSessions = () => {
 
   const postSession = async () => {
     setLoading(true);
-    const getToken = localStorage.getItem("token");
-    const token = JSON.parse(getToken);
+    const token = localStorage.getItem("token"); 
     const url = "http://localhost:3000/sessions/addSession";
     let durationInMinutes = 0;
     if (duration) {

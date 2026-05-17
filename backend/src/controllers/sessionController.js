@@ -16,3 +16,15 @@ export const addSession = async (req, res) => {
     res.status(500).json({error: "Internal Server Error!"})
   }
 };
+
+export const getSession = async (req,res) => {
+  const userId = req.user.id
+  try {
+    const session = await WorkSession.find({userId: userId}).sort({updatedAt: -1})
+    console.log(session);
+    res.status(200).json(session)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Internal Server Error!"})
+  }
+}
