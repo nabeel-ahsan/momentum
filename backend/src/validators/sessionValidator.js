@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const SessionSchema = z.object({
-  type: z.enum(["DSA", "Dev", "Applications", "Learning", "Other"]),
+  type: z.enum(["DSA", "Development", "Applications", "Learning", "Other"]),
   status: z.enum(["Completed", "In Progress"]),
   title: z
     .string()

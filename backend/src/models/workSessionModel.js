@@ -4,7 +4,7 @@ const workSessionSchema = mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ['DSA', 'Dev', 'Applications', 'Learning', 'Other'],
+      enum: ['DSA', 'Development', 'Applications', 'Learning', 'Other'],
       required: true,
     },
     status: {
