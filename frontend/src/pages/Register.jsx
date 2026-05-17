@@ -7,8 +7,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  // const [submitted, setSubmitted] = useState(false);
-  // const [error, setError] = useState(false);
+
 
   const navigate = useNavigate();
   const postData = async () => {
@@ -84,25 +83,6 @@ const Register = () => {
       await postData();
     }
   };
-
-  // const successMessage = () => {
-  //   return (
-  //     toast.success(`${name} successfully registered`)
-  //   );
-  // };
-
-  // const errorMessage = () => {
-  //   return (
-  //     <div
-  //       className="error"
-  //       style={{
-  //         display: error ? "" : "none",
-  //       }}
-  //     >
-  //       <h1>Please enter all the fields</h1>
-  //     </div>
-  //   );
-  // };
 
   return (
     <div className="form">

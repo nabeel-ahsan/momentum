@@ -5,18 +5,18 @@ const AddSessions = () => {
   const [type, setType] = useState("Development");
   const [status, setStatus] = useState("In Progress");
   const [title, setTitle] = useState("");
-  const [duration, setDuration] = useState(""); 
+  const [duration, setDuration] = useState("");
   const [notes, setNotes] = useState("");
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
 
   const postSession = async () => {
     setLoading(true);
-    const token = localStorage.getItem("token"); 
+    const token = localStorage.getItem("token");
     const url = "http://localhost:3000/sessions/addSession";
     let durationInMinutes = 0;
     if (duration) {
-      const [hours, minutes] = duration.split(':').map(Number);
+      const [hours, minutes] = duration.split(":").map(Number);
       durationInMinutes = hours * 60 + minutes;
     }
     try {
@@ -39,16 +39,16 @@ const AddSessions = () => {
       if (response.ok) {
         console.log("response:", response);
         console.log("result: ", result);
-        setType('Development')
-        setStatus('In Progress') // Resetting to initial values after successful submission
+        setType("Development");
+        setStatus("In Progress");
         setTitle("");
         setDuration("");
         setNotes("");
         setLink("");
         toast.success("Session Successfully Created!");
-      }else{
-        console.error("Error response from server:", result); // Log the detailed error message from the backend
-        toast.error(result.message || "Error creating session!"); // Display specific error if available, otherwise a generic one
+      } else {
+        console.error("Error response from server:", result);
+        toast.error(result.message || "Error creating session!");
       }
     } catch (error) {
       console.log(error);
@@ -59,7 +59,7 @@ const AddSessions = () => {
   };
 
   const validateData = () => {
-    if (!title || duration === "") { // Check if title is empty or duration is an empty string
+    if (!title || duration === "") {
       return false;
     }
     return true;
@@ -79,43 +79,55 @@ const AddSessions = () => {
           <h1>Create Session</h1>
         </div>
         <form onSubmit={handleSubmit}>
-          <label>Type</label>
-          <select value={type} onChange={(e) => setType(e.target.value)}>
+          <label className="label">Type</label>
+          <select
+            value={type}
+            className="input"
+            onChange={(e) => setType(e.target.value)}
+          >
             <option value="Development">Dev</option>
             <option value="DSA">DSA</option>
             <option value="Applications">Applications</option>
             <option value="Learning">Learning</option>
             <option value="Other">Other</option>
           </select>
-          <label>Status</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <label className="label">Status</label>
+          <select
+            value={status}
+            className="input"
+            onChange={(e) => setStatus(e.target.value)}
+          >
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
-          <label>Title</label>
+          <label className="label">Title</label>
           <input
+            className="input"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <label>Duration</label>
+          <label className="label">Duration</label>
           <input
+            className="input"
             type="time"
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           />
-          <label>Notes</label>
+          <label className="label">Notes</label>
           <textarea
+            className="input"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           ></textarea>
-          <label>Link</label>
+          <label className="label">Link</label>
           <input
             type="url"
+            className="input"
             value={link}
             onChange={(e) => setLink(e.target.value)}
           />
-          <button type="submit" disabled={loading}>
+          <button className="btn" type="submit" disabled={loading}>
             {loading ? "Submitting..." : "Submit"}
           </button>
         </form>

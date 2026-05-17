@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
-import { BeatLoader } from "react-spinners";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -11,7 +10,6 @@ const LogIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  // const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
   const postData = async () => {
@@ -42,13 +40,13 @@ const LogIn = () => {
 
         login(user, token);
         console.log("Logging in:", user);
-        // setErrorMessage("");
+       
         setEmail("");
         setPassword("");
         toast.success("Log In Successfull!");
         navigate("/app");
       } else {
-        // setErrorMessage(data.message);
+     
         toast.error("Error logging in!");
       }
     } catch (error) {
@@ -60,21 +58,20 @@ const LogIn = () => {
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
-    // setErrorMessage("");
+
   };
 
   const handlePassword = (e) => {
     setPassword(e.target.value);
-    // setErrorMessage("");
+
   };
 
   const validateForm = () => {
     if (!email.includes("@")) {
-      // setErrorMessage("Invalid Credentials!");
       toast.error("Invalid Credentials!");
       return false;
     } else if (password.length < 6) {
-      // setErrorMessage("Invalid Credentials!");
+
       toast.error("Invalid Credentials!");
       return false;
     } else {
@@ -94,8 +91,6 @@ const LogIn = () => {
       <div>
         <h1>User Registration</h1>
       </div>
-
-      {/* <div className="messages">{errorMessage}</div> */}
 
       <form onSubmit={handleSubmit}>
         <label className="label">Email</label>

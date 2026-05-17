@@ -1,51 +1,42 @@
 .App {
-    text-align: center;
-    background-color: green;
+    font-family: monospace;
+    background-color: #fff9f0;
+}
+
+.form {
+    background-color: #fdfbf5;
+    margin: auto;
+    border: 2px solid black;
+    padding: 20px;
+    max-width: 500px; 
+}
+
+input, select, textarea, button, .label, .btn, .formHeading {
+  font-family: monospace;
+}
+
+.formHeading {
+    font-size: larger;
 }
 
 .label {
-    display: block;
-    font-size: larger;
-    color: white;
-    padding: 5px;
+    font-size: large;
+    color: black;
 }
 
 .input {
-    font-size: larger;
+    border: 2px solid black;
+    width: 100%;
     padding: 5px;
-    margin: 2px;
-
+    margin: 5px;
 }
 
 .btn {
+    background-color: #727272;
     color: white;
-    background-color: red;
-    border-radius: 5px;
-    font-size: larger;
+    font-size: large;
+    padding: 10px;
     display: block;
-    padding: 5px;
+    border: 2px solid black;
     margin: 10px auto;
-}
-
-.messages {
-    display: flex;
-    justify-content: center;
-}
-
-.error {
-    display: block;
-    background-color: red;
-    color: white;
-    width: fit-content;
-    height: 50px;
-    padding: 5px;
-}
-
-.success {
-    display: block;
-    background-color: lightblue;
-    color: black;
-    width: fit-content;
-    height: 50px;
-    padding: 5px;
 }
