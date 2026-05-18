@@ -1,9 +1,91 @@
-import React from 'react'
+import { useEffect, useState } from "react";
+import { BounceLoader } from "react-spinners";
 
 const ListSessions = () => {
-  return (
-    <div>Hello!</div>
-  )
-}
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const url = "http://localhost:3000/sessions/getSession";
+      const token = localStorage.getItem("token");
+      try {
+        const response = await fetch(url, {
+          headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const result = await response.json();
+        if (result) {
+          console.log(result);
+          setSessions(result);
+        } else {
+          return "No sessions to show";
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-export default ListSessions
+    fetchData();
+  }, []);
+  return (
+    <div>
+      {loading ? (
+        <BounceLoader />
+      ) : (
+        <div>
+          {sessions ? (
+            <table className="table">
+              <thead>
+                <tr>
+                  <th className="table-header">Title</th>
+                  <th className="table-header">Type</th>
+                  <th className="table-header">Status</th>
+                  <th className="table-header">Duration</th>
+                  <th className="table-header">Notes</th>
+                  <th className="table-header">Link</th>
+                  <th className="table-header">Created At</th>
+                  <th className="table-header">Update</th>
+                  <th className="table-header">Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.map((item) => {
+                  return (
+                    <tr key={item.id}>
+                      <td>{item.title}</td>
+                      <td>{item.type}</td>
+                      <td>{item.status}</td>
+                      <td>{`${String(Math.floor(item.duration/60)).padStart(2, '0')}H:${String(Math.floor(item.duration%60)).padStart(2, '0')}M`}</td>
+                      <td>{item.notes ? item.notes : "-"}</td>
+                      <td>{item.link ? item.link : "-"}</td>
+                      <td>{new Date(item.createdAt).toLocaleDateString('en-GB',{
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric"
+                      })}</td>
+                      <td>
+                        <button>Update</button>
+                      </td>
+                      <td>
+                        <button>Delete</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            "No Sessions Yet!"
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ListSessions;
