@@ -1,37 +1,55 @@
 import { useEffect, useState } from "react";
 import { BounceLoader } from "react-spinners";
+import EditSessionModal from "../components/EditSessionModal";
 
 const ListSessions = () => {
   const [sessions, setSessions] = useState([]);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const url = "http://localhost:3000/sessions/getSession";
-      const token = localStorage.getItem("token");
-      try {
-        const response = await fetch(url, {
-          headers: {
-            "Content-type": "application/json; charset=UTF-8",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const result = await response.json();
-        if (result) {
-          console.log(result);
-          setSessions(result);
-        } else {
-          return "No sessions to show";
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  const fetchData = async () => {
+    setLoading(true);
+    const url = "http://localhost:3000/sessions/getSession";
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(url, {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await response.json();
+      if (result) {
+        console.log(result);
+        setSessions(result);
+      } else {
+        return "No sessions to show";
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const editSession = (currentSession) => {
+    setSelectedSession(currentSession);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSession(null);
+  };
+
+  const refreshSessions = async () => {
+    await fetchData();
+  };
+
   return (
     <div>
       {loading ? (
@@ -60,16 +78,24 @@ const ListSessions = () => {
                       <td>{item.title}</td>
                       <td>{item.type}</td>
                       <td>{item.status}</td>
-                      <td>{`${String(Math.floor(item.duration/60)).padStart(2, '0')}H:${String(Math.floor(item.duration%60)).padStart(2, '0')}M`}</td>
+                      <td>{`${String(Math.floor(item.duration / 60)).padStart(2, "0")}H:${String(Math.floor(item.duration % 60)).padStart(2, "0")}M`}</td>
                       <td>{item.notes ? item.notes : "-"}</td>
                       <td>{item.link ? item.link : "-"}</td>
-                      <td>{new Date(item.createdAt).toLocaleDateString('en-GB',{
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric"
-                      })}</td>
                       <td>
-                        <button>Update</button>
+                        {new Date(item.createdAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => {
+                            editSession(item);
+                          }}
+                        >
+                          Update
+                        </button>
                       </td>
                       <td>
                         <button>Delete</button>
@@ -83,6 +109,14 @@ const ListSessions = () => {
             "No Sessions Yet!"
           )}
         </div>
+      )}
+      {isModalOpen && selectedSession && (
+        <EditSessionModal
+          isModalOpen={isModalOpen}
+          session={selectedSession}
+          onClose={closeModal}
+          onUpdateSuccess={refreshSessions}
+        />
       )}
     </div>
   );
