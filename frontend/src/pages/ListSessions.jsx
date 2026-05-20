@@ -7,11 +7,14 @@ const ListSessions = () => {
   const [sessions, setSessions] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filterType, setFilterType] = useState("");
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
-    const url = "http://localhost:3000/sessions/getSession";
+    const url = `http://localhost:3000/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=&${endDate}`;
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(url, {
@@ -35,7 +38,7 @@ const ListSessions = () => {
   };
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [filterType, startDate, endDate]);
 
   const editSession = (currentSession) => {
     setSelectedSession(currentSession);
@@ -67,7 +70,7 @@ const ListSessions = () => {
       const result = await response.json();
       if (response.ok) {
         toast.success(result.message);
-        fetchData()
+        fetchData();
       }
     } catch (error) {
       console.log(error);
@@ -76,6 +79,12 @@ const ListSessions = () => {
     }
   };
 
+  const resetFilter = async() => {
+    setFilterType("")
+    setStartDate("")
+    setEndDate("")
+  }
+
   return (
     <div>
       {loading ? (
@@ -83,60 +92,83 @@ const ListSessions = () => {
       ) : (
         <div>
           {sessions ? (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th className="table-header">Title</th>
-                  <th className="table-header">Type</th>
-                  <th className="table-header">Status</th>
-                  <th className="table-header">Duration</th>
-                  <th className="table-header">Notes</th>
-                  <th className="table-header">Link</th>
-                  <th className="table-header">Created At</th>
-                  <th className="table-header">Update</th>
-                  <th className="table-header">Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sessions.map((item) => {
-                  return (
-                    <tr key={item.id}>
-                      <td>{item.title}</td>
-                      <td>{item.type}</td>
-                      <td>{item.status}</td>
-                      <td>{`${String(Math.floor(item.duration / 60)).padStart(2, "0")}H:${String(Math.floor(item.duration % 60)).padStart(2, "0")}M`}</td>
-                      <td>{item.notes ? item.notes : "-"}</td>
-                      <td>{item.link ? item.link : "-"}</td>
-                      <td>
-                        {new Date(item.createdAt).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => {
-                            editSession(item);
-                          }}
-                        >
-                          Update
-                        </button>
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => {
-                            handleDelete(item);
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div>
+              <div className="filter">
+                <p>Filter By:</p>
+                <label>Type</label>
+                <select value={filterType} onChange={(e)=> setFilterType(e.target.value)}>
+                  <option value="None"></option>
+                  <option value="Development">Development</option>
+                  <option value="DSA">DSA</option>
+                  <option value="Applications">Applications</option>
+                  <option value="Learning">Learning</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label >Start Date</label>
+                <input type="date" value={startDate} onChange={(e)=> setStartDate(e.target.value)}/>
+                <label >End Date</label>
+                <input type="date" value={endDate} onChange={(e)=> setEndDate(e.target.value)}/>
+                <button onClick={fetchData}>Filter</button>
+                <button onClick={resetFilter}>Reset</button>
+              </div>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th className="table-header">Title</th>
+                    <th className="table-header">Type</th>
+                    <th className="table-header">Status</th>
+                    <th className="table-header">Duration</th>
+                    <th className="table-header">Notes</th>
+                    <th className="table-header">Link</th>
+                    <th className="table-header">Created At</th>
+                    <th className="table-header">Update</th>
+                    <th className="table-header">Delete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sessions.map((item) => {
+                    return (
+                      <tr key={item.id}>
+                        <td>{item.title}</td>
+                        <td>{item.type}</td>
+                        <td>{item.status}</td>
+                        <td>{`${String(Math.floor(item.duration / 60)).padStart(2, "0")}H:${String(Math.floor(item.duration % 60)).padStart(2, "0")}M`}</td>
+                        <td>{item.notes ? item.notes : "-"}</td>
+                        <td>{item.link ? item.link : "-"}</td>
+                        <td>
+                          {new Date(item.createdAt).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => {
+                              editSession(item);
+                            }}
+                          >
+                            Update
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            onClick={() => {
+                              handleDelete(item);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           ) : (
             "No Sessions Yet!"
           )}

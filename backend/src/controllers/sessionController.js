@@ -22,8 +22,19 @@ export const addSession = async (req, res) => {
 
 export const getSession = async (req, res) => {
   const userId = req.user.id;
+  const { type, startDate, endDate } = req.query;
+  const filter = { userId: userId };
+  if (type) {
+    filter.type = type;
+  }
+
+  if (startDate || endDate) {
+    filter.createdAt = {};
+    if (startDate) filter.createdAt.$gte = new Date(startDate);
+    if (endDate) filter.createdAt.$lte = new Date(endDate);
+  }
   try {
-    const session = await WorkSession.find({ userId: userId }).sort({
+    const session = await WorkSession.find(filter).sort({
       updatedAt: -1,
     });
     console.log(session);

@@ -43,7 +43,7 @@ input, select, textarea, button, .label, .btn, .formHeading {
 
 .table {
     border: 2px solid black;
-    padding: 5px;
+    padding: 10px;
     text-align: center;
     font-family: monospace;
 }
