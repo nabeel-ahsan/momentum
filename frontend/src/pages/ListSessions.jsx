@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BounceLoader } from "react-spinners";
 import EditSessionModal from "../components/EditSessionModal";
+import { toast } from "react-toastify";
 
 const ListSessions = () => {
   const [sessions, setSessions] = useState([]);
@@ -48,6 +49,31 @@ const ListSessions = () => {
 
   const refreshSessions = async () => {
     await fetchData();
+  };
+
+  const handleDelete = async (item) => {
+    setLoading(true);
+    const id = item._id;
+    const url = `http://localhost:3000/sessions/deleteSession/${id}`;
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success(result.message);
+        fetchData()
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -98,7 +124,13 @@ const ListSessions = () => {
                         </button>
                       </td>
                       <td>
-                        <button>Delete</button>
+                        <button
+                          onClick={() => {
+                            handleDelete(item);
+                          }}
+                        >
+                          Delete
+                        </button>
                       </td>
                     </tr>
                   );
