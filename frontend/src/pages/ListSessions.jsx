@@ -39,10 +39,11 @@ const ListSessions = () => {
   const { refreshSignal } = useOutletContext();
   
   const context = useOutletContext();
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const {token} = useAuth();
   const fetchData = async () => {
     setLoading(true);
-    const url = `http://localhost:3000/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}`;
+    const url = `${API_BASE_URL}/api/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}`;
     try {
       const response = await fetch(url, {
         headers: {

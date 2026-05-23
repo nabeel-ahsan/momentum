@@ -10,11 +10,12 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const navigate = useNavigate();
 
   const postData = async () => {
     setLoading(true);
-    const url = "http://localhost:3000/auth/signup";
+    const url = `${API_BASE_URL}/auth/signup`;
     try {
       const response = await fetch(url, {
         method: "POST",

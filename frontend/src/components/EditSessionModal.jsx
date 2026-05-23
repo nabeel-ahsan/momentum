@@ -19,6 +19,7 @@ const EditSessionModal = ({
   const [link, setLink] = useState(session.link);
   const [loading, setLoading] = useState(false);
 
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const id = session._id;
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const EditSessionModal = ({
   const editSession = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
-    const url = `http://localhost:3000/sessions/updateSession/${id}`;
+    const url = `${API_BASE_URL}/api/sessions/updateSession/${id}`;
 
     let durationInMinutes = 0;
     if (duration) {
