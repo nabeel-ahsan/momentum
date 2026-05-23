@@ -1,7 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
+import styles from "../utils/styles";
+import { useAuth } from "../context/AuthProvider";
 
-const AddSessions = () => {
+const AddSessions = ({ onCloseDrawer, onAddSuccess }) => {
   const [type, setType] = useState("Development");
   const [status, setStatus] = useState("In Progress");
   const [title, setTitle] = useState("");
@@ -9,10 +11,10 @@ const AddSessions = () => {
   const [notes, setNotes] = useState("");
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { token } = useAuth();
   const postSession = async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
+
     const url = "http://localhost:3000/sessions/addSession";
     let durationInMinutes = 0;
     if (duration) {
@@ -37,8 +39,6 @@ const AddSessions = () => {
       });
       const result = await response.json();
       if (response.ok) {
-        console.log("response:", response);
-        console.log("result: ", result);
         setType("Development");
         setStatus("In Progress");
         setTitle("");
@@ -46,8 +46,9 @@ const AddSessions = () => {
         setNotes("");
         setLink("");
         toast.success("Session Successfully Created!");
+        if (onAddSuccess) onAddSuccess(); // Safely triggers automatic logs grid refreshes
+        if (onCloseDrawer) onCloseDrawer(); // Slides overlay away cleanly
       } else {
-        console.error("Error response from server:", result);
         toast.error(result.message || "Error creating session!");
       }
     } catch (error) {
@@ -60,6 +61,7 @@ const AddSessions = () => {
 
   const validateData = () => {
     if (!title || duration === "") {
+      toast.error("Please enter a valid title and time duration block.");
       return false;
     }
     return true;
@@ -73,16 +75,13 @@ const AddSessions = () => {
   };
 
   return (
-    <>
-      <div className="form">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <h1>Create Session</h1>
-        </div>
-        <form onSubmit={handleSubmit}>
-          <label className="label">Type</label>
+          <label className={styles.label}>Type</label>
           <select
             value={type}
-            className="input"
+            className={styles.input}
             onChange={(e) => setType(e.target.value)}
           >
             <option value="Development">Dev</option>
@@ -91,48 +90,80 @@ const AddSessions = () => {
             <option value="Learning">Learning</option>
             <option value="Other">Other</option>
           </select>
-          <label className="label">Status</label>
+        </div>
+        <div>
+          <label className={styles.label}>Status</label>
           <select
             value={status}
-            className="input"
+            className={styles.input}
             onChange={(e) => setStatus(e.target.value)}
           >
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
-          <label className="label">Title</label>
-          <input
-            className="input"
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <label className="label">Duration</label>
-          <input
-            className="input"
-            type="time"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-          />
-          <label className="label">Notes</label>
-          <textarea
-            className="input"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          ></textarea>
-          <label className="label">Link</label>
-          <input
-            type="url"
-            className="input"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-          />
-          <button className="btn" type="submit" disabled={loading}>
-            {loading ? "Submitting..." : "Submit"}
-          </button>
-        </form>
+        </div>
       </div>
-    </>
+
+      <div>
+        <label className={styles.label}>Session Task Title</label>
+        <input
+          className={styles.input}
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="e.g., Slidewindow Matrix optimization"
+        />
+      </div>
+
+      <div>
+        <label className={styles.label}>Duration (Hours : Minutes)</label>
+        <input
+          className={styles.input}
+          type="time"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label className={styles.label}>Engineering Notes</label>
+        <textarea
+          rows={4}
+          className={`${styles.input} resize-none`}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Add code details, optimizations or blockers..."
+        />
+      </div>
+
+      <div>
+        <label className={styles.label}>Reference Material Link</label>
+        <input
+          type="url"
+          className={styles.input}
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="https://leetcode..."
+        />
+      </div>
+
+      <div className="flex items-center gap-3 pt-4 border-t border-zinc-800/60 mt-8">
+        <button
+          type="button"
+          onClick={onCloseDrawer}
+          className={`${styles.button.secondary} w-1/3`}
+        >
+          Cancel
+        </button>
+        <button
+          className={`${styles.button.primary} w-2/3`}
+          type="submit"
+          disabled={loading}
+        >
+          {loading ? "Submitting..." : "Save Log Entry"}
+        </button>
+      </div>
+    </form>
   );
 };
 
