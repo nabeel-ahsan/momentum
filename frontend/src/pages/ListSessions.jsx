@@ -89,7 +89,7 @@ const ListSessions = () => {
     if(!window.confirm("Confirm transaction log deletion permanently?")) return;
     setLoading(true);
     const id = item._id;
-    const url = `http://localhost:3000/sessions/deleteSession/${id}`;
+    const url = `${API_BASE_URL}/sessions/deleteSession/${id}`;
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(url, {

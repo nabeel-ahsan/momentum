@@ -38,7 +38,7 @@ const EditSessionModal = ({
   const editSession = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
-    const url = `${API_BASE_URL}/api/sessions/updateSession/${id}`;
+    const url = `${API_BASE_URL}/sessions/updateSession/${id}`;
 
     let durationInMinutes = 0;
     if (duration) {

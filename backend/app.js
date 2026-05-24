@@ -4,7 +4,6 @@ import authRouter from './src/routes/authRoute.js'
 import sessionRouter from './src/routes/sessionRoute.js'
 import { authMiddleware } from "./src/middleware/authMiddleware.js";
 
-
 const app = express();
 
 app.use(cors());
