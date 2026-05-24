@@ -39,7 +39,7 @@ const ListSessions = () => {
   const { refreshSignal } = useOutletContext();
   
   const context = useOutletContext();
-  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API_BASE_URL = import.meta.env.VITE_API_URL;
   const {token} = useAuth();
   const fetchData = async () => {
     setLoading(true);

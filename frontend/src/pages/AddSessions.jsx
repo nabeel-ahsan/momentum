@@ -15,7 +15,7 @@ const AddSessions = ({ onCloseDrawer, onAddSuccess }) => {
   const postSession = async () => {
     setLoading(true);
 
-    const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    const API_BASE_URL = import.meta.env.VITE_API_URL;
 const url = `${API_BASE_URL}/sessions/addSessions`;
     let durationInMinutes = 0;
     if (duration) {
