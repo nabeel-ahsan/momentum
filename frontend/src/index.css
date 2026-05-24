@@ -1,17 +1,16 @@
+/* /frontend/src/index.css */
 @import "tailwindcss";
-@plugin "tailwindcss-animate";
 
 @theme {
   --animate-fade-in-up: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-slide-in-from-right: slide-in-from-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slide-in-from-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
   }
 }
