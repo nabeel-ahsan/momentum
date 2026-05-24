@@ -16,7 +16,7 @@ const AddSessions = ({ onCloseDrawer, onAddSuccess }) => {
     setLoading(true);
 
     const API_BASE_URL = import.meta.env.VITE_API_URL;
-const url = `${API_BASE_URL}/sessions/addSessions`;
+const url = `${API_BASE_URL}/sessions/addSession`;
     let durationInMinutes = 0;
     if (duration) {
       const [hours, minutes] = duration.split(":").map(Number);
