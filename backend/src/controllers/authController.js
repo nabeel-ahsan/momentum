@@ -54,7 +54,7 @@ export const login = async (req, res) => {
       issuer: "momentum-app",
       audience: "users",
     });
-    res.json({
+    res.status(200).json({
       message: "Login Successful",
       token,
       user: {

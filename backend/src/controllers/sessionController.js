@@ -144,5 +144,5 @@ export const getStats = async (req, res) => {
 
   console.log(totalCount);
 
-  res.json({ message: result });
+  res.json(result);
 };
