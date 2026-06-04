@@ -93,3 +93,56 @@ export const deleteSession = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+export const getStats = async (req, res) => {
+  const userId = req.user.id;
+  const objectId = new mongoose.Types.ObjectId(userId);
+
+  const totalCount = await WorkSession.aggregate([
+    {
+      $match: {
+        userId: objectId,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        count: { $sum: 1 },
+        duration: { $sum: "$duration" },
+      },
+    },
+  ]);
+
+  const groupByCategory = await WorkSession.aggregate([
+    {
+      $match: {
+        userId: objectId,
+      },
+    },
+    {
+      $group: {
+        _id: "$type",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const sessionsByType = groupByCategory.reduce((acc, type) => {
+    const key = type._id
+    const value = type.count
+    console.log(`KEY: ${key} AND VALUE: ${value}`);
+    
+    acc[key] = (acc[key] || 0) + value;
+    return acc;
+  }, {});
+
+  const result = {
+    totalSessions: totalCount[0].count,
+    totalDuration: totalCount[0].duration,
+    sessionsByType,
+  };
+
+  console.log(totalCount);
+
+  res.json({ message: result });
+};
