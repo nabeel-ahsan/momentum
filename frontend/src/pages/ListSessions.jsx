@@ -91,11 +91,16 @@ const ListSessions = () => {
         },
       });
       const result = await response.json();
-      if (typeof result === 'object' && result !== null && !Array.isArray(result)) {
+      if (
+        typeof result === "object" &&
+        result !== null &&
+        !Array.isArray(result)
+      ) {
         setStats(result);
       } else {
         setStats({});
       }
+      console.log("Successful getStats", stats);
     } catch (error) {
       console.log(error);
       setStats({});
@@ -159,12 +164,13 @@ const ListSessions = () => {
   };
 
   console.log("STATS: ", stats);
-  
 
-  const totalSessions = stats.totalSessions || 0;
-  const totalDuration = stats.totalDuration || 0;
-  const dsaCount = stats.sessionsByType.DSA || 0;
-  const devCount = stats.sessionByType.Dev || 0;
+  const totalSessions = stats?.totalSessions || 0;
+  const totalDuration = stats?.totalDuration || 0;
+  const hours = String(Math.floor(totalDuration / 60)).padStart(2, "0");
+  const minutes = String(totalDuration % 60).padStart(2, "0");
+  const dsaCount = stats.sessionsByType?.DSA || 0;
+  const devCount = stats.sessionsByType?.Development || 0;
 
   return (
     <div className="space-y-8 flex-1 flex flex-col">
@@ -188,7 +194,7 @@ const ListSessions = () => {
         <div className={`${styles.card} p-5`}>
           <p className={styles.label}>Total Focused Hours</p>
           <p className="text-3xl font-extrabold mt-1.5 text-blue-400">
-            {totalDuration}H
+            {`${hours}H${minutes}M`}
           </p>
         </div>
       </section>
