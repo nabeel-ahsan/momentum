@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import styles from "../utils/styles";
 import { useAuth } from "../context/AuthProvider";
+import SessionChart from "../components/SessionChart";
 
 const Tag = ({ type }) => {
   const base =
@@ -171,6 +172,13 @@ const ListSessions = () => {
   const minutes = String(totalDuration % 60).padStart(2, "0");
   const dsaCount = stats?.sessionsByType?.DSA || 0;
   const devCount = stats?.sessionsByType?.Development || 0;
+  const appCount = stats?.sessionsByType?.Applications || 0;
+
+  const chartData = [
+    { name: "DSA", count: dsaCount },
+    { name: "Development", count: devCount },
+    { name: "Applications", count: appCount },
+  ];
 
   return (
     <div className="space-y-8 flex-1 flex flex-col">
@@ -196,6 +204,21 @@ const ListSessions = () => {
           <p className="text-3xl font-extrabold mt-1.5 text-blue-400">
             {`${hours}H${minutes}M`}
           </p>
+        </div>
+      </section>
+
+      <section className="mb-6 rounded-xl border border-neutral-800/60 bg-[#111111] p-5 shadow-xl">
+        <div className="mb-4">
+          <h3 className="text-base font-semibold tracking-wide text-neutral-200">
+            Activity Distribution
+          </h3>
+          <p className="text-xs text-neutral-500">
+            Visual breakdown of logged focus blocks by category.
+          </p>
+        </div>
+
+        <div className="h-[300px] w-full">
+          <SessionChart chartData={chartData} />
         </div>
       </section>
 

@@ -17,6 +17,7 @@
     "react-router-dom": "^7.13.1",
     "react-spinners": "^0.17.0",
     "react-toastify": "^11.1.0",
+    "recharts": "^3.8.1",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
