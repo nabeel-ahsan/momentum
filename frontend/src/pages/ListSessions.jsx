@@ -44,6 +44,8 @@ const StatusDot = ({ status }) => {
 };
 
 const ListSessions = () => {
+  const currentYYYYMM = new Date().toISOString().slice(0, 7);
+
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState({});
   const [selectedSession, setSelectedSession] = useState(null);
@@ -51,6 +53,7 @@ const ListSessions = () => {
   const [filterType, setFilterType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState(currentYYYYMM);
   const [loading, setLoading] = useState(false);
   const { refreshSignal } = useOutletContext();
 
@@ -59,7 +62,7 @@ const ListSessions = () => {
   const { token } = useAuth();
   const fetchData = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}`;
+    const url = `${API_BASE_URL}/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}&month=${selectedMonth}`;
     try {
       const response = await fetch(url, {
         headers: {
@@ -83,7 +86,7 @@ const ListSessions = () => {
 
   const fetchStats = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/sessions/stats`;
+    const url = `${API_BASE_URL}/sessions/stats/?month=${selectedMonth}`;
     try {
       const response = await fetch(url, {
         headers: {
@@ -113,7 +116,7 @@ const ListSessions = () => {
   useEffect(() => {
     fetchData();
     fetchStats();
-  }, [filterType, startDate, endDate, refreshSignal, token]);
+  }, [filterType, startDate, endDate, refreshSignal, token, selectedMonth]);
 
   useEffect(() => {
     if (context) {
@@ -260,6 +263,17 @@ const ListSessions = () => {
               className="bg-transparent text-zinc-200 outline-none"
             />
           </div>
+          <div className="flex items-center gap-2 bg-[#0d0d0e] border border-zinc-800 px-2.5 py-1.5 rounded-lg text-zinc-400 text-xs">
+            <span className="text-zinc-600 font-bold uppercase text-[10px]">
+              Month
+            </span>
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="bg-transparent text-zinc-200 outline-none"
+            />
+          </div>
 
           <button
             onClick={resetFilter}
@@ -360,7 +374,7 @@ const ListSessions = () => {
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-zinc-500 text-sm font-medium p-20">
-            No Developer Sessions Found Grid Empty!
+            No Sessions Found!
           </div>
         )}
       </section>

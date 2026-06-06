@@ -21,18 +21,45 @@ export const addSession = async (req, res) => {
 };
 
 export const getSession = async (req, res) => {
+  let { month } = req.query;
   const userId = req.user.id;
+  
   const { type, startDate, endDate } = req.query;
   const filter = { userId: userId };
   if (type) {
     filter.type = type;
   }
 
-  if (startDate || endDate) {
-    filter.createdAt = {};
-    if (startDate) filter.createdAt.$gte = new Date(startDate);
-    if (endDate) filter.createdAt.$lte = new Date(endDate);
+  if (!month) {
+    month = new Date().toISOString().slice(0, 7);
   }
+
+  console.log("MONTH IS : ", month);
+  console.log({
+  startDate,
+  endDate,
+  startDateParsed: startDate ? new Date(startDate) : null,
+  endDateParsed: endDate ? new Date(endDate) : null,
+});
+  
+  
+  const [yearStr, monthStr] = month.split("-");
+  const year = parseInt(yearStr, 10);
+  const monthIndex = parseInt(monthStr, 10) - 1;
+  const startMonth = new Date(Date.UTC(year, monthIndex, 1, 1, 0, 0, 0, 0));
+  const endMonth = new Date(Date.UTC(year, monthIndex + 1, 1, 0, 0, 0, 0));
+
+  filter.createdAt = {
+    $gte: startMonth,
+    $lte: endMonth
+  }
+  
+  if ((startDate && startDate.trim() !== "") || (endDate && endDate.trim() !== "")) {
+  filter.createdAt = {};
+  if (startDate && startDate.trim() !== "") filter.createdAt.$gte = new Date(startDate);
+  if (endDate && endDate.trim() !== "") filter.createdAt.$lte = new Date(endDate);
+}
+  
   try {
     const session = await WorkSession.find(filter).sort({
       updatedAt: -1,
@@ -95,13 +122,27 @@ export const deleteSession = async (req, res) => {
 };
 
 export const getStats = async (req, res) => {
+  let { month } = req.query;
+  if (!month) {
+    month = new Date().toISOString().slice(0, 7);
+  }
+
+  const [yearStr, monthStr] = month.split("-");
+  const year = parseInt(yearStr, 10);
+  const monthIndex = parseInt(monthStr, 10) - 1;
+  const startMonth = new Date(Date.UTC(year, monthIndex, 1, 1, 0, 0, 0, 0));
+  const endMonth = new Date(Date.UTC(year, monthIndex + 1, 1, 0, 0, 0, 0));
+
   const userId = req.user.id;
   const objectId = new mongoose.Types.ObjectId(userId);
-
   const totalCount = await WorkSession.aggregate([
     {
       $match: {
         userId: objectId,
+        createdAt: {
+          $gte: startMonth,
+          $lt: endMonth,
+        },
       },
     },
     {
@@ -117,6 +158,10 @@ export const getStats = async (req, res) => {
     {
       $match: {
         userId: objectId,
+        createdAt: {
+          $gte: startMonth,
+          $lt: endMonth,
+        },
       },
     },
     {
@@ -128,17 +173,17 @@ export const getStats = async (req, res) => {
   ]);
 
   const sessionsByType = groupByCategory.reduce((acc, type) => {
-    const key = type._id
-    const value = type.count
+    const key = type._id;
+    const value = type.count;
     console.log(`KEY: ${key} AND VALUE: ${value}`);
-    
+
     acc[key] = (acc[key] || 0) + value;
     return acc;
   }, {});
 
   const result = {
-    totalSessions: totalCount[0].count,
-    totalDuration: totalCount[0].duration,
+    totalSessions: totalCount[0]?.count,
+    totalDuration: totalCount[0]?.duration,
     sessionsByType,
   };
 
