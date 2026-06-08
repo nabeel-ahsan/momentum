@@ -47,8 +47,8 @@ const url = `${API_BASE_URL}/sessions/addSession`;
         setNotes("");
         setLink("");
         toast.success("Session Successfully Created!");
-        if (onAddSuccess) onAddSuccess(); // Safely triggers automatic logs grid refreshes
-        if (onCloseDrawer) onCloseDrawer(); // Slides overlay away cleanly
+        if (onAddSuccess) onAddSuccess();
+        if (onCloseDrawer) onCloseDrawer();
       } else {
         toast.error(result.message || "Error creating session!");
       }
@@ -61,10 +61,22 @@ const url = `${API_BASE_URL}/sessions/addSession`;
   };
 
   const validateData = () => {
-    if (!title || duration === "") {
-      toast.error("Please enter a valid title and time duration block.");
+    if (!title) {
+      toast.error("Please enter a valid session title.");
       return false;
     }
+
+    if (!duration || duration === "00:00") {
+      toast.error("Duration must be a positive time block (min 1 minute).");
+      return false;
+    }
+
+    const [hours, minutes] = duration.split(":").map(Number);
+    if (hours === 0 && minutes === 0) {
+      toast.error("Duration must be a positive time block (min 1 minute).");
+      return false;
+    }
+
     return true;
   };
 
@@ -113,6 +125,7 @@ const url = `${API_BASE_URL}/sessions/addSession`;
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="e.g., Slidewindow Matrix optimization"
+          required
         />
       </div>
 
@@ -123,11 +136,12 @@ const url = `${API_BASE_URL}/sessions/addSession`;
           type="time"
           value={duration}
           onChange={(e) => setDuration(e.target.value)}
+          required
         />
       </div>
 
       <div>
-        <label className={styles.label}>Engineering Notes</label>
+        <label className={styles.label}>Engineering Notes (Optional)</label>
         <textarea
           rows={4}
           className={`${styles.input} resize-none`}
@@ -138,7 +152,7 @@ const url = `${API_BASE_URL}/sessions/addSession`;
       </div>
 
       <div>
-        <label className={styles.label}>Reference Material Link</label>
+        <label className={styles.label}>Reference Material Link (Optional)</label>
         <input
           type="url"
           className={styles.input}
@@ -153,6 +167,7 @@ const url = `${API_BASE_URL}/sessions/addSession`;
           type="button"
           onClick={onCloseDrawer}
           className={`${styles.button.secondary} w-1/3`}
+          disabled={loading}
         >
           Cancel
         </button>

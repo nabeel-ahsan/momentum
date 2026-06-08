@@ -36,12 +36,11 @@ const LogIn = () => {
         toast.success("Log In Successful!");
         navigate("/app");
       } else {
-        toast.error("Error logging in!");
+        toast.error(data.message || "Invalid Credentials!");
       }
     } catch (error) {
-      console.error("Error: ", error);
       setLoading(false);
-      alert("Error occurred!");
+      toast.error("Connection error. Please try again.");
     }
   };
 
@@ -50,10 +49,10 @@ const LogIn = () => {
 
   const validateForm = () => {
     if (!email.includes("@")) {
-      toast.error("Invalid Credentials!");
+      toast.error("Please enter a valid email.");
       return false;
     } else if (password.length < 6) {
-      toast.error("Invalid Credentials!");
+      toast.error("Password must be at least 6 characters.");
       return false;
     } else {
       return true;

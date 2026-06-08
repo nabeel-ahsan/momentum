@@ -38,7 +38,7 @@ const Profile = () => {
       <div className="pt-4">
         <button
           onClick={logout}
-          className={`${styles.button.secondary} !text-red-400 hover:!bg-red-500/10 border-red-500/10 w-full sm:w-auto`}
+          className={`${styles.button.danger} w-full sm:w-auto`}
           type="button"
         >
           <LogOut size={15} /> Terminate System Session

@@ -30,11 +30,10 @@ const Register = () => {
         setPassword("");
         navigate("/login");
       } else {
-        alert(data.message || "Error creating user!");
+        toast.error(data.message || "Error creating account!");
       }
     } catch (error) {
-      console.error("Error: ", error);
-      alert("Error occurred!");
+      toast.error("Connection error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,14 +44,14 @@ const Register = () => {
   const handlePassword = (e) => setPassword(e.target.value);
 
   const validateForm = () => {
-    if (name === "" || email === "" || password === "") {
-      toast.error("Invalid Form Input!");
+    if (name.trim().length < 2) {
+      toast.error("Please enter your full name.");
       return false;
     } else if (!email.includes("@")) {
-      toast.error("Invalid Form Input!");
+      toast.error("Please enter a valid developer email.");
       return false;
     } else if (password.length < 6) {
-      toast.error("Invalid Form Input!");
+      toast.error("Password must be at least 6 characters.");
       return false;
     } else {
       return true;

@@ -45,7 +45,6 @@ const StatusDot = ({ status }) => {
 
 const ListSessions = () => {
   const currentYYYYMM = new Date().toISOString().slice(0, 7);
-
   const [sessions, setSessions] = useState([]);
   const [stats, setStats] = useState({});
   const [selectedSession, setSelectedSession] = useState(null);
@@ -77,7 +76,7 @@ const ListSessions = () => {
         setSessions([]);
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to fetch session history.");
       setSessions([]);
     } finally {
       setLoading(false);
@@ -104,15 +103,13 @@ const ListSessions = () => {
       } else {
         setStats({});
       }
-      console.log("Successful getStats", stats);
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to load activity statistics.");
       setStats({});
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchData();
     fetchStats();
@@ -140,7 +137,6 @@ const ListSessions = () => {
     setLoading(true);
     const id = item._id;
     const url = `${API_BASE_URL}/sessions/deleteSession/${id}`;
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(url, {
         method: "DELETE",
@@ -153,9 +149,11 @@ const ListSessions = () => {
       if (response.ok) {
         toast.success(result.message || "Session Deleted");
         fetchData();
+      } else {
+        toast.error(result.message || "Failed to delete session.");
       }
     } catch (error) {
-      console.log(error);
+      toast.error("Connection error during deletion.");
     } finally {
       setLoading(false);
     }
@@ -166,8 +164,6 @@ const ListSessions = () => {
     setStartDate("");
     setEndDate("");
   };
-
-  console.log("STATS: ", stats);
 
   const totalSessions = stats?.totalSessions || 0;
   const totalDuration = stats?.totalDuration || 0;
@@ -353,14 +349,16 @@ const ListSessions = () => {
                       <div className="flex items-center justify-center gap-1.5">
                         <button
                           onClick={() => editSession(item)}
-                          className="text-zinc-500 hover:text-white p-1.5 rounded transition-all"
+                          className={styles.button.icon}
                           type="button"
+                          disabled={loading}
                         >
                           <Edit2 size={13} />
                         </button>
                         <button
                           onClick={() => handleDelete(item)}
-                          className="text-zinc-500 hover:text-red-400 p-1.5 rounded transition-all"
+                          disabled={loading}
+                          className={`${styles.button.icon} hover:text-red-400`}
                           type="button"
                         >
                           <Trash2 size={13} />

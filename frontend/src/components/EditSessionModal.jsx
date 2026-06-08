@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { X, Save } from "lucide-react";
 import styles from "../utils/styles";
+import { useAuth } from "../context/AuthProvider";
 
 const EditSessionModal = ({
   isModalOpen,
@@ -9,8 +10,6 @@ const EditSessionModal = ({
   onClose,
   onUpdateSuccess,
 }) => {
-  if (!isModalOpen || !session) return null;
-
   const [type, setType] = useState(session.type);
   const [status, setStatus] = useState(session.status);
   const [title, setTitle] = useState(session.title);
@@ -21,6 +20,7 @@ const EditSessionModal = ({
 
   const API_BASE_URL = import.meta.env.VITE_API_URL;
   const id = session._id;
+  const { token } = useAuth();
 
   useEffect(() => {
     const hours = Math.floor(session.duration / 60);
@@ -35,9 +35,10 @@ const EditSessionModal = ({
     setLink(session.link);
   }, [session]);
 
+  if (!isModalOpen || !session) return null;
+
   const editSession = async () => {
     setLoading(true);
-    const token = localStorage.getItem("token");
     const url = `${API_BASE_URL}/sessions/updateSession/${id}`;
 
     let durationInMinutes = 0;
