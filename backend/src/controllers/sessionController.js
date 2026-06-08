@@ -1,16 +1,10 @@
 import mongoose from "mongoose";
 import WorkSession from "../models/workSessionModel.js";
-import { SessionSchema } from "../validators/sessionValidator.js";
 
 export const addSession = async (req, res) => {
   try {
-    const result = SessionSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: result.error.flatten() });
-    }
-
     const userId = req.user.id;
-    const newSession = new WorkSession({ ...result.data, userId });
+    const newSession = new WorkSession({ ...req.body, userId });
     const savedSession = await newSession.save();
     res
       .status(201)
@@ -33,15 +27,6 @@ export const getSession = async (req, res) => {
   if (!month) {
     month = new Date().toISOString().slice(0, 7);
   }
-
-  console.log("MONTH IS : ", month);
-  console.log({
-  startDate,
-  endDate,
-  startDateParsed: startDate ? new Date(startDate) : null,
-  endDateParsed: endDate ? new Date(endDate) : null,
-});
-  
   
   const [yearStr, monthStr] = month.split("-");
   const year = parseInt(yearStr, 10);
@@ -64,10 +49,8 @@ export const getSession = async (req, res) => {
     const session = await WorkSession.find(filter).sort({
       updatedAt: -1,
     });
-    console.log(session);
     res.status(200).json(session);
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
     res.status(500).json({ message: "Internal Server Error!" });
   }
 };
@@ -93,12 +76,9 @@ export const updateSession = async (req, res) => {
       });
     }
     await session.save();
-    console.log("UpdatedSession: ", updatedSession);
-
-    console.log("Session:", session);
     return res.status(201).json(session);
-  } catch (error) {
-    return res.json(error);
+  } catch (e) {
+    return res.status(500).json({message: "Internal Server Error!"});
   }
 };
 
@@ -115,8 +95,7 @@ export const deleteSession = async (req, res) => {
     res.status(200).json({
       message: "Session Deleted Successfully!",
     });
-  } catch (error) {
-    console.log(error);
+  } catch (e) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -175,7 +154,6 @@ export const getStats = async (req, res) => {
   const sessionsByType = groupByCategory.reduce((acc, type) => {
     const key = type._id;
     const value = type.count;
-    console.log(`KEY: ${key} AND VALUE: ${value}`);
 
     acc[key] = (acc[key] || 0) + value;
     return acc;
@@ -186,8 +164,6 @@ export const getStats = async (req, res) => {
     totalDuration: totalCount[0]?.duration,
     sessionsByType,
   };
-
-  console.log(totalCount);
 
   res.json(result);
 };
