@@ -10,13 +10,10 @@ import AppError from "./src/utils/appError.js";
 
 const app = express();
 
-// 1. Disable Express's native X-Powered-By header
 app.disable("x-powered-by");
 
-// 2. Add Helmet security headers at the very top of the middleware stack
 app.use(helmet());
 
-// 3. Configure CORS to allow only the frontend origin (dynamic with dev fallback)
 const corsOptions = {
   origin: process.env.FRONTEND_URL || "http://localhost:5173",
   optionsSuccessStatus: 200,
@@ -29,9 +26,8 @@ app.get('/test', authMiddleware, (req, res)=> {
     res.json({user: req.user})
 })
 
-// 4. Configure Rate Limiter for auth routes (5 attempts / 15 min)
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // Corrected from 15 * 60 * 100 (90 seconds) to 15 * 60 * 1000 (15 minutes)
+    windowMs: 15 * 60 * 1000,
     limit: 5,
     message: {
         success: false,
