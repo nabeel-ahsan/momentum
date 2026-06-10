@@ -1,20 +1,18 @@
 import mongoose from "mongoose";
 import WorkSession from "../models/workSessionModel.js";
+import AppError from "../utils/appError.js";
+import { catchAsync } from "../utils/catchAsync.js";
 
-export const addSession = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const newSession = new WorkSession({ ...req.body, userId });
-    const savedSession = await newSession.save();
-    res
-      .status(201)
-      .json({ message: "Session Created Successfully!", savedSession });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error!" });
-  }
-};
+export const addSession = catchAsync(async (req, res, next) => {
+  const userId = req.user.id;
+  const newSession = new WorkSession({ ...req.body, userId });
+  const savedSession = await newSession.save();
+  res
+    .status(201)
+    .json({ message: "Session Created Successfully!", savedSession });
+});
 
-export const getSession = async (req, res) => {
+export const getSession = catchAsync(async (req, res, next) => {
   let { month } = req.query;
   const userId = req.user.id;
   
@@ -40,67 +38,52 @@ export const getSession = async (req, res) => {
   }
   
   if ((startDate && startDate.trim() !== "") || (endDate && endDate.trim() !== "")) {
-  filter.createdAt = {};
-  if (startDate && startDate.trim() !== "") filter.createdAt.$gte = new Date(startDate);
-  if (endDate && endDate.trim() !== "") filter.createdAt.$lte = new Date(endDate);
-}
+    filter.createdAt = {};
+    if (startDate && startDate.trim() !== "") filter.createdAt.$gte = new Date(startDate);
+    if (endDate && endDate.trim() !== "") filter.createdAt.$lte = new Date(endDate);
+  }
   
-  try {
-    const session = await WorkSession.find(filter).sort({
-      updatedAt: -1,
-    });
-    res.status(200).json(session);
-  } catch (e) {
-    res.status(500).json({ message: "Internal Server Error!" });
-  }
-};
+  const sessions = await WorkSession.find(filter).sort({
+    updatedAt: -1,
+  });
+  res.status(200).json(sessions);
+});
 
-export const updateSession = async (req, res) => {
+export const updateSession = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({
-        message: "Invalid Session ID",
-      });
-    }
-    const updatedSession = req.body;
-    const session = await WorkSession.findOneAndUpdate(
-      { _id: id, userId: userId },
-      updatedSession,
-      { new: true },
-    );
-    if (!session) {
-      return res.status(404).json({
-        message: "Session not found",
-      });
-    }
-    await session.save();
-    return res.status(201).json(session);
-  } catch (e) {
-    return res.status(500).json({message: "Internal Server Error!"});
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid Session ID", 404);
   }
-};
+  const updatedSession = req.body;
+  const session = await WorkSession.findOneAndUpdate(
+    { _id: id, userId: userId },
+    updatedSession,
+    { new: true },
+  );
+  if (!session) {
+    throw new AppError("Session not found", 404);
+  }
+  await session.save();
+  res.status(201).json(session);
+});
 
-export const deleteSession = async (req, res) => {
+export const deleteSession = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
-  try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).json({
-        message: "Invalid Session ID",
-      });
-    }
-    await WorkSession.deleteOne({ _id: id, userId: userId });
-    res.status(200).json({
-      message: "Session Deleted Successfully!",
-    });
-  } catch (e) {
-    res.status(500).json({ message: "Internal Server Error" });
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid Session ID", 404);
   }
-};
+  const deleteResult = await WorkSession.deleteOne({ _id: id, userId: userId });
+  if (deleteResult.deletedCount === 0) {
+    throw new AppError("Session not found", 404);
+  }
+  res.status(200).json({
+    message: "Session Deleted Successfully!",
+  });
+});
 
-export const getStats = async (req, res) => {
+export const getStats = catchAsync(async (req, res, next) => {
   let { month } = req.query;
   if (!month) {
     month = new Date().toISOString().slice(0, 7);
@@ -160,10 +143,10 @@ export const getStats = async (req, res) => {
   }, {});
 
   const result = {
-    totalSessions: totalCount[0]?.count,
-    totalDuration: totalCount[0]?.duration,
+    totalSessions: totalCount[0]?.count || 0,
+    totalDuration: totalCount[0]?.duration || 0,
     sessionsByType,
   };
 
   res.json(result);
-};
+});

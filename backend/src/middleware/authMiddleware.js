@@ -1,19 +1,16 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+import AppError from "../utils/appError.js";
 
 export const authMiddleware = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return res.status(401).json({
-        error: "Access denied. No tokens provided.",
-      });
+      return next(new AppError("Access denied. No token provided.", 401));
     }
     const token = authHeader.split(" ")[1];
     if (!token) {
-      return res.status(401).json({
-        error: "Access denied. Invalid token format.",
-      });
+      return next(new AppError("Access denied. Invalid token format.", 401));
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
@@ -21,20 +18,13 @@ export const authMiddleware = (req, res, next) => {
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      return res.status(401).json({
-        error: "Token expired. Please login again.",
-      });
+      return next(new AppError("Token expired. Please login again.", 401));
     }
 
     if (error.name === "JsonWebTokenError") {
-      return res.status(403).json({
-        error: "Invalid token.",
-      });
+      return next(new AppError("Invalid token.", 403));
     }
 
-    console.error("Auth middleware error:", error);
-    res.status(500).json({
-      error: "Internal server error",
-    });
+    next(error);
   }
 };
