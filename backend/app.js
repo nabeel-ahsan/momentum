@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import morgan from 'morgan'
 import { rateLimit } from "express-rate-limit";
 import authRouter from './src/routes/authRoute.js'
 import sessionRouter from './src/routes/sessionRoute.js'
@@ -12,10 +13,18 @@ const app = express();
 
 app.disable("x-powered-by");
 
+app.use(morgan('dev'))
+
 app.use(helmet());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: allowedOrigins,
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
