@@ -14,8 +14,12 @@ export const addSession = catchAsync(async (req, res, next) => {
 
 export const getSession = catchAsync(async (req, res, next) => {
   let { month } = req.query;
+  const page = Math.max(1, Number(req.query.page) || 1);
+  const limit = Math.min(20, Number(req.query.limit) || 20);
   const userId = req.user.id;
-  
+
+  const skip = (page - 1) * limit;
+
   const { type, startDate, endDate } = req.query;
   const filter = { userId: userId };
   if (type) {
@@ -25,7 +29,7 @@ export const getSession = catchAsync(async (req, res, next) => {
   if (!month) {
     month = new Date().toISOString().slice(0, 7);
   }
-  
+
   const [yearStr, monthStr] = month.split("-");
   const year = parseInt(yearStr, 10);
   const monthIndex = parseInt(monthStr, 10) - 1;
@@ -34,18 +38,36 @@ export const getSession = catchAsync(async (req, res, next) => {
 
   filter.createdAt = {
     $gte: startMonth,
-    $lte: endMonth
-  }
-  
-  if ((startDate && startDate.trim() !== "") || (endDate && endDate.trim() !== "")) {
+    $lte: endMonth,
+  };
+
+  if (
+    (startDate && startDate.trim() !== "") ||
+    (endDate && endDate.trim() !== "")
+  ) {
     filter.createdAt = {};
-    if (startDate && startDate.trim() !== "") filter.createdAt.$gte = new Date(startDate);
-    if (endDate && endDate.trim() !== "") filter.createdAt.$lte = new Date(endDate);
+    if (startDate && startDate.trim() !== "")
+      filter.createdAt.$gte = new Date(startDate);
+    if (endDate && endDate.trim() !== "")
+      filter.createdAt.$lte = new Date(endDate);
   }
-  
-  const sessions = await WorkSession.find(filter).sort({
-    updatedAt: -1,
-  });
+
+  const sessionsReceived = await WorkSession.find(filter)
+    .sort({
+      updatedAt: -1,
+    })
+    .skip(skip)
+    .limit(limit);
+
+    const totalCount = await WorkSession.countDocuments({userId: userId})
+    const pages = Math.ceil(totalCount/limit)
+    const sessions = {
+  posts: sessionsReceived,
+  page: page,
+  limit: limit,
+  totalPages: pages,
+  totalPosts: totalCount
+}
   res.status(200).json(sessions);
 });
 
