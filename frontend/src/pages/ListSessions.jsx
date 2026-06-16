@@ -10,6 +10,8 @@ import {
   Edit2,
   Trash2,
   ExternalLink,
+  MoveLeft,
+  MoveRight,
 } from "lucide-react";
 import styles from "../utils/styles";
 import { useAuth } from "../context/AuthProvider";
@@ -53,15 +55,18 @@ const ListSessions = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(currentYYYYMM);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const { refreshSignal } = useOutletContext();
 
   const context = useOutletContext();
   const API_BASE_URL = import.meta.env.VITE_API_URL;
   const { token } = useAuth();
+  const limit = 20;
   const fetchData = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}&month=${selectedMonth}`;
+    const url = `${API_BASE_URL}/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}&month=${selectedMonth}&page=${currentPage}&limit=${limit}`;
     try {
       const response = await fetch(url, {
         headers: {
@@ -70,8 +75,11 @@ const ListSessions = () => {
         },
       });
       const result = await response.json();
-      if (Array.isArray(result)) {
-        setSessions(result);
+      if (Array.isArray(result.posts)) {
+        setSessions(result.posts);
+        setCurrentPage(result.page);
+        setTotalPages(result.totalPages);
+        console.log(result);
       } else {
         setSessions([]);
       }
@@ -110,8 +118,20 @@ const ListSessions = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     fetchData();
+  }, [
+    filterType,
+    startDate,
+    endDate,
+    refreshSignal,
+    token,
+    selectedMonth,
+    currentPage,
+  ]);
+
+  useEffect(() => {
     fetchStats();
   }, [filterType, startDate, endDate, refreshSignal, token, selectedMonth]);
 
@@ -178,6 +198,24 @@ const ListSessions = () => {
     { name: "Development", count: devCount },
     { name: "Applications", count: appCount },
   ];
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const siblingCount = 1; // How many pages to show on left/right of the active page
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 || // Always show the first page
+        i === totalPages || // Always show the last page
+        (i >= currentPage - siblingCount && i <= currentPage + siblingCount) // Show active page neighbors
+      ) {
+        pages.push(i);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("..."); // Add an ellipsis if we haven't already
+      }
+    }
+    return pages;
+  };
 
   return (
     <div className="space-y-8 flex-1 flex flex-col">
@@ -369,6 +407,86 @@ const ListSessions = () => {
                 ))}
               </tbody>
             </table>
+            {/* <div className="flex align-items">
+              <button
+                disabled={currentPage == 1 || loading}
+                onClick={() => setCurrentPage(currentPage - 1)}
+              >
+                <MoveLeft />
+              </button>
+              <button
+                disabled={currentPage == totalPages || loading}
+                onClick={() => setCurrentPage(currentPage + 1)}
+              >
+                <MoveRight />
+              </button>
+            </div> */}
+            {totalPages > 1 && (
+              <div
+                className="flex flex-col sm:flex-row items-center justify-between border-t border-zinc-800 bg-[#0d0d0e]/20 px-6 py-4 gap-4"
+              >
+                <p className="text-xs text-zinc-500 font-medium">
+                  Showing page{" "}
+                  <span className="text-zinc-300 font-semibold">
+                    {currentPage}
+                  </span>{" "}
+                  of
+                  <span className="text-zinc-350 font-semibold">
+                    {totalPages}
+                  </span>
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
+                    disabled={currentPage === 1 || loading}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:text-white hover:bg-zinc-800/80 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                    type="button"
+                  >
+                    Previous
+                  </button>
+                  {getPageNumbers().map((page, index) => {
+                    if (page === "...") {
+                      return (
+                        <span
+                          key={`ellipse-${index}`}
+                          className="h-8 w-8 flex items-center justify-center text-xs text-zinc-600 select-none cursor-default"
+                        >
+                          ...
+                        </span>
+                      );
+                    }
+
+                    return (
+                      <button
+                        key={`page-${page}`}
+                        onClick={() => setCurrentPage(page)}
+                        disabled={loading}
+                        className={
+                          page === currentPage
+                            ? "h-8 w-8 flex items-center justify-center rounded-lg text-xs font-bold bg-white text-black shadow-md shadow-white/5"
+                            : "h-8 w-8 flex items-center justify-center rounded-lg text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-800/50 transition-all"
+                        }
+                        type="button"
+                      >
+                        {page}
+                      </button>
+                    );
+                  })}
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={currentPage === totalPages || loading}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:text-white hover:bg-zinc-800/80 disabled:opacity-30 disabled:pointer-events-none transition-all"
+                    type="button"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-zinc-500 text-sm font-medium p-20">

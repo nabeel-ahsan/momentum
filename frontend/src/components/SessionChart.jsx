@@ -11,7 +11,7 @@ import {
 const SessionChart = ({chartData}) => {
   return (
     <div style={{ width: "100%", height: 300 }}>
-      <ResponsiveContainer width="99%" height="100%">
+      <ResponsiveContainer minWidth="0%" minHeight="0%" width="99%" height="100%">
         <BarChart data={chartData}>
           <XAxis dataKey="name" stroke="#888888" />
           <YAxis allowDecimals={false} stroke="#888888" />
