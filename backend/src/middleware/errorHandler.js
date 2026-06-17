@@ -51,11 +51,12 @@ const errorHandler = (err, req, res, next) => {
     errors = {};
   }
 
-  console.error(`[ERROR] ${req.method} ${req.originalUrl} - Status: ${statusCode} -      
+  if (process.env.NODE_ENV !== "test") {
+    console.error(`[ERROR] ${req.method} ${req.originalUrl} - Status: ${statusCode} -    
   Message: ${message}`);
-
-  if (err.stack) {
-    console.error(err.stack);
+    if (err.stack) {
+      console.error(err.stack);
+    }
   }
 
   res.status(statusCode).json({
