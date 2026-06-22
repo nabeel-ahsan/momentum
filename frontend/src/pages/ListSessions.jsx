@@ -66,7 +66,7 @@ const ListSessions = () => {
   const limit = 20;
   const fetchData = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/sessions/getSession/?type=${filterType}&startDate=${startDate}&endDate=${endDate}&month=${selectedMonth}&page=${currentPage}&limit=${limit}`;
+    const url = `${API_BASE_URL}/api/v1/sessions/?type=${filterType}&startDate=${startDate}&endDate=${endDate}&month=${selectedMonth}&page=${currentPage}&limit=${limit}`;
     try {
       const response = await fetch(url, {
         headers: {
@@ -75,8 +75,8 @@ const ListSessions = () => {
         },
       });
       const result = await response.json();
-      if (Array.isArray(result.posts)) {
-        setSessions(result.posts);
+      if (Array.isArray(result.sessions)) {
+        setSessions(result.sessions);
         setCurrentPage(result.page);
         setTotalPages(result.totalPages);
         console.log(result);
@@ -93,7 +93,7 @@ const ListSessions = () => {
 
   const fetchStats = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/sessions/stats/?month=${selectedMonth}`;
+    const url = `${API_BASE_URL}/api/v1/sessions/stats/?month=${selectedMonth}`;
     try {
       const response = await fetch(url, {
         headers: {
@@ -156,7 +156,7 @@ const ListSessions = () => {
       return;
     setLoading(true);
     const id = item._id;
-    const url = `${API_BASE_URL}/sessions/deleteSession/${id}`;
+    const url = `${API_BASE_URL}/api/v1/sessions/${id}`;
     try {
       const response = await fetch(url, {
         method: "DELETE",
@@ -201,17 +201,17 @@ const ListSessions = () => {
 
   const getPageNumbers = () => {
     const pages = [];
-    const siblingCount = 1; // How many pages to show on left/right of the active page
+    const siblingCount = 1; 
 
     for (let i = 1; i <= totalPages; i++) {
       if (
-        i === 1 || // Always show the first page
-        i === totalPages || // Always show the last page
-        (i >= currentPage - siblingCount && i <= currentPage + siblingCount) // Show active page neighbors
+        i === 1 || 
+        i === totalPages ||
+        (i >= currentPage - siblingCount && i <= currentPage + siblingCount) 
       ) {
         pages.push(i);
       } else if (pages[pages.length - 1] !== "...") {
-        pages.push("..."); // Add an ellipsis if we haven't already
+        pages.push("..."); 
       }
     }
     return pages;
@@ -407,20 +407,6 @@ const ListSessions = () => {
                 ))}
               </tbody>
             </table>
-            {/* <div className="flex align-items">
-              <button
-                disabled={currentPage == 1 || loading}
-                onClick={() => setCurrentPage(currentPage - 1)}
-              >
-                <MoveLeft />
-              </button>
-              <button
-                disabled={currentPage == totalPages || loading}
-                onClick={() => setCurrentPage(currentPage + 1)}
-              >
-                <MoveRight />
-              </button>
-            </div> */}
             {totalPages > 1 && (
               <div
                 className="flex flex-col sm:flex-row items-center justify-between border-t border-zinc-800 bg-[#0d0d0e]/20 px-6 py-4 gap-4"

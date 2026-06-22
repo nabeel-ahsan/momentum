@@ -17,7 +17,7 @@ const LogIn = () => {
 
   const postData = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/auth/login`;
+    const url = `${API_BASE_URL}/api/v1/auth/login`;
     try {
       const response = await fetch(url, {
         method: "POST",

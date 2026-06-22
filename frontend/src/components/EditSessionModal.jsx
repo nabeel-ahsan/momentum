@@ -39,7 +39,7 @@ const EditSessionModal = ({
 
   const editSession = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/sessions/updateSession/${id}`;
+    const url = `${API_BASE_URL}/api/v1/sessions/${id}`;
 
     let durationInMinutes = 0;
     if (duration) {

@@ -15,7 +15,7 @@ const Register = () => {
 
   const postData = async () => {
     setLoading(true);
-    const url = `${API_BASE_URL}/auth/signup`;
+    const url = `${API_BASE_URL}/api/v1/auth/signup`;
     try {
       const response = await fetch(url, {
         method: "POST",
