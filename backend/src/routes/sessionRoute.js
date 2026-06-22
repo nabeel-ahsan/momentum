@@ -6,10 +6,10 @@ import { SessionSchema } from '../validators/sessionValidator.js';
 
 const router = express.Router()
 
-router.route('/addSession').post(authMiddleware,validatorMiddleware(SessionSchema) , addSession)
-router.route('/getSession').get(authMiddleware,getSession)
-router.route('/updateSession/:id').put(authMiddleware,validatorMiddleware(SessionSchema), updateSession)
-router.route('/deleteSession/:id').delete(authMiddleware, deleteSession)
+router.route('/').post(authMiddleware,validatorMiddleware(SessionSchema) , addSession)
+router.route('/').get(authMiddleware,getSession)
+router.route('/:id').put(authMiddleware,validatorMiddleware(SessionSchema), updateSession)
+router.route('/:id').delete(authMiddleware, deleteSession)
 router.route('/stats').get(authMiddleware, getStats)
 
 export default router;

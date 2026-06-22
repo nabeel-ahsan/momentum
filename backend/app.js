@@ -49,8 +49,8 @@ const authLimiter = rateLimit({
     ipv6Subnet: 56,
 });
 
-app.use("/auth", authLimiter, authRouter);
-app.use("/sessions", sessionRouter);
+app.use("/api/v1/auth", authLimiter, authRouter);
+app.use("/api/v1/sessions", sessionRouter);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

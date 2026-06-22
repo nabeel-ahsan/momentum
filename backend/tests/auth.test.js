@@ -12,7 +12,7 @@ describe("Authentication API Endpoints", () => {
   });
 
   it("should create a new user successfully", async () => {
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       name: "Test Developer",
       email: "testdev@example.com",
       password: "securepassword123",
@@ -22,13 +22,13 @@ describe("Authentication API Endpoints", () => {
   });
 
   it("should fail signup when the email is already registered", async () => {
-    await request(app).post("/auth/signup").send({
+    await request(app).post("/api/v1/auth/signup").send({
       name: "First User",
       email: "duplicate@example.com",
       password: "password123",
     });
 
-    const res = await request(app).post("/auth/signup").send({
+    const res = await request(app).post("/api/v1/auth/signup").send({
       name: "Second User",
       email: "duplicate@example.com",
       password: "anotherpassword",
@@ -39,13 +39,13 @@ describe("Authentication API Endpoints", () => {
   });
 
   it("should log in successfully and return a JWT token", async () => {
-    await request(app).post("/auth/signup").send({
+    await request(app).post("/api/v1/auth/signup").send({
       name: "Login User",
       email: "login@example.com",
       password: "password123",
     });
 
-    const res = await request(app).post("/auth/login").send({
+    const res = await request(app).post("/api/v1/auth/login").send({
       email: "login@example.com",
       password: "password123",
     });

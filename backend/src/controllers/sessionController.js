@@ -7,6 +7,7 @@ export const addSession = catchAsync(async (req, res, next) => {
   const userId = req.user.id;
   const newSession = new WorkSession({ ...req.body, userId });
   const savedSession = await newSession.save();
+  
   res
     .status(201)
     .json({ message: "Session Created Successfully!", savedSession });
@@ -62,7 +63,7 @@ export const getSession = catchAsync(async (req, res, next) => {
     const totalCount = await WorkSession.countDocuments({userId: userId})
     const pages = Math.ceil(totalCount/limit)
     const sessions = {
-  posts: sessionsReceived,
+  sessions: sessionsReceived,
   page: page,
   limit: limit,
   totalPages: pages,
@@ -87,7 +88,7 @@ export const updateSession = catchAsync(async (req, res, next) => {
     throw new AppError("Session not found", 404);
   }
   await session.save();
-  res.status(201).json(session);
+  res.status(200).json(session);
 });
 
 export const deleteSession = catchAsync(async (req, res, next) => {
