@@ -227,3 +227,75 @@ The system is designed to:
 Momentum is not just a tracker.
 
 It is a system for turning effort into visible progress.
+
+---
+
+# Backup & Restore Strategy
+
+To guarantee data resilience, Momentum utilizes a multi-tier backup approach across development and production environments.
+
+## 1. MongoDB Atlas Manual Backups (M0 Free Tier Strategy)
+Since the production database is hosted on MongoDB Atlas's **M0 Free Tier**, automated cloud snapshots are not supported by the platform. Instead, database backups are executed periodically through manual dumps.
+
+### A. Recommended Backup Frequency:
+*   **Weekly**: Run a database dump to capture standard user activity.
+*   **Pre-Deployment**: Always run a manual backup immediately before executing major backend schema migrations or deploying route refactors.
+
+### B. Manual Production Dump Command:
+Save a secure local copy of your production database to a folder called `production-backups/` (this folder is ignored by git):
+```bash
+# Run from the backend directory
+mongodump --uri="mongodb+srv://admin:<password>@cluster.mongodb.net/momentum" --out=./production-backups/
+```
+
+---
+
+## 2. Local Database Backup & Restore (Development)
+For local testing, database migrations, or reproducing production bugs locally, use the native MongoDB tools: `mongodump` and `mongorestore`.
+
+### A. Prerequisites
+Ensure you have the MongoDB Database Tools installed. Verify by running:
+```bash
+mongodump --version
+```
+
+### B. Local Backup Command
+To backup your local MongoDB `momentum` database to a folder called `db-backup/` in the project root:
+```bash
+# Run from the project root
+mongodump --db=momentum --out=./db-backup/
+```
+This generates a `./db-backup/momentum/` directory containing binary BSON data and JSON metadata for each collection.
+
+### C. Local Restore Command
+To restore or import these BSON files back into your local database:
+```bash
+# Run from the project root
+mongorestore --db=momentum ./db-backup/momentum
+```
+*Note: To overwrite existing collections during a restore, append the `--drop` flag.*
+
+### D. Backup Atlas to Local Disk
+To pull a copy of your cloud database into your local environment for debugging:
+```bash
+mongodump --uri="mongodb+srv://<username>:<password>@cluster.mongodb.net/momentum" --out=./db-backup/
+```
+
+---
+
+## 3. Environment Variables Backup (Security-Conscious)
+Configuration files containing database connection strings, JWT signing keys, and CORS origins are gitignored to prevent security leaks.
+
+### A. The `.env.example` Template
+We maintain a `.env.example` file in the git repository to serve as the template for new developer environments. It contains only key names, omitting actual values:
+```env
+PORT=3000
+DB_URI=your_mongodb_connection_uri_here
+JWT_SECRET=your_jwt_signing_secret_here
+FRONTEND_URL=your_frontend_url_here
+```
+
+### B. Secure Secret Backups
+*   **Never** commit raw `.env` files to Git.
+*   **Never** upload plain text `.env` files to Google Drive, Dropbox, or public cloud storage.
+*   **Recommended**: Store production API keys and database credentials in an encrypted credentials manager (e.g. 1Password, Bitwarden) or configure them directly within secure deployment environment settings in the Vercel/Render developer dashboards.

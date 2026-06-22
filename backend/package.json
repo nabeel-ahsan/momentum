@@ -16,7 +16,8 @@
   "scripts": {
     "start": "nodemon server.js",
     "seed": "node scripts/seed.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles" 
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --detectOpenHandles",
+    "db:backup": "node scripts/backup.js"
   },
   "devDependencies": {
     "jest": "^30.4.2",
