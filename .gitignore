@@ -2,3 +2,6 @@
 .vercel
 .env*
 /TODO-JUNE-END.md
+db-backup/
+production-backups/
+coverage/
