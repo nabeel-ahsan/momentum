@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styles from "../utils/styles";
 import { useAuth } from "../context/AuthProvider";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 const AddSessions = ({ onCloseDrawer, onAddSuccess }) => {
   const [type, setType] = useState("Development");
@@ -117,28 +119,24 @@ const url = `${API_BASE_URL}/api/v1/sessions`;
         </div>
       </div>
 
-      <div>
-        <label className={styles.label}>Session Task Title</label>
-        <input
-          className={styles.input}
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="e.g., Slidewindow Matrix optimization"
-          required
-        />
-      </div>
+      <Input
+        label="Session Task Title"
+        id="title"
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="e.g., Slidewindow Matrix optimization"
+        required
+      />
 
-      <div>
-        <label className={styles.label}>Duration (Hours : Minutes)</label>
-        <input
-          className={styles.input}
-          type="time"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          required
-        />
-      </div>
+      <Input
+        label="Duration (Hours : Minutes)"
+        id="duration"
+        type="time"
+        value={duration}
+        onChange={(e) => setDuration(e.target.value)}
+        required
+      />
 
       <div>
         <label className={styles.label}>Engineering Notes (Optional)</label>
@@ -151,33 +149,33 @@ const url = `${API_BASE_URL}/api/v1/sessions`;
         />
       </div>
 
-      <div>
-        <label className={styles.label}>Reference Material Link (Optional)</label>
-        <input
-          type="url"
-          className={styles.input}
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          placeholder="https://leetcode..."
-        />
-      </div>
+      <Input
+        label="Reference Material Link (Optional)"
+        id="link"
+        type="url"
+        value={link}
+        onChange={(e) => setLink(e.target.value)}
+        placeholder="https://leetcode..."
+      />
 
       <div className="flex items-center gap-3 pt-4 border-t border-zinc-800/60 mt-8">
-        <button
+        <Button
           type="button"
           onClick={onCloseDrawer}
-          className={`${styles.button.secondary} w-1/3`}
+          variant="secondary"
+          className="w-1/3"
           disabled={loading}
         >
           Cancel
-        </button>
-        <button
-          className={`${styles.button.primary} w-2/3`}
+        </Button>
+        <Button
           type="submit"
-          disabled={loading}
+          variant="primary"
+          className="w-2/3"
+          loading={loading}
         >
-          {loading ? "Submitting..." : "Save Log Entry"}
-        </button>
+          Save Log Entry
+        </Button>
       </div>
     </form>
   );

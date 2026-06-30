@@ -2,6 +2,7 @@ import React from "react";
 import { X } from "lucide-react";
 import styles from "../utils/styles";
 import AddSessions from "../pages/AddSessions";
+import Button from "./ui/Button";
 
 export default function AddSessionDrawer({ isOpen, setOpen, onAddSuccess }) {
   if (!isOpen) return null;
@@ -18,13 +19,14 @@ export default function AddSessionDrawer({ isOpen, setOpen, onAddSuccess }) {
           <h2 className="text-2xl font-bold tracking-tight text-white">
             Add Focus Session
           </h2>
-          <button
+          <Button
             type="button"
             onClick={() => setOpen(false)}
-            className={`${styles.button.ghost} text-zinc-500`}
+            variant="ghost"
+            className="text-zinc-500 hover:text-white p-1"
           >
             <X size={22} />
-          </button>
+          </Button>
         </header>
 
         <AddSessions

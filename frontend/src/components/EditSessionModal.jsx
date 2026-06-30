@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { X, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import styles from "../utils/styles";
 import { useAuth } from "../context/AuthProvider";
+import Modal from "./ui/Modal";
+import Input from "./ui/Input";
+import Button from "./ui/Button";
 
 const EditSessionModal = ({
   isModalOpen,
@@ -34,8 +37,6 @@ const EditSessionModal = ({
     setNotes(session.notes);
     setLink(session.link);
   }, [session]);
-
-  if (!isModalOpen || !session) return null;
 
   const editSession = async () => {
     setLoading(true);
@@ -94,128 +95,100 @@ const EditSessionModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
-      />
-      <div className="relative w-full max-w-lg bg-[#0d0d0e] border border-zinc-800 p-6 md:p-8 rounded-xl shadow-2xl overflow-y-auto max-h-[90vh] z-10 animate-in zoom-in-95 duration-200">
-        <header className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-6">
+    <Modal
+      isOpen={isModalOpen}
+      onClose={onClose}
+      title="Modify Session Log"
+      subtitle="Update task data information properties"
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <h2 className="text-xl font-bold tracking-tight text-white">
-              Modify Session Log
-            </h2>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Update task data information properties
-            </p>
+            <label className={styles.label}>Category Type</label>
+            <select
+              value={type}
+              className={styles.input}
+              onChange={(e) => setType(e.target.value)}
+            >
+              <option value="Development">Dev</option>
+              <option value="DSA">DSA</option>
+              <option value="Applications">Applications</option>
+              <option value="Learning">Learning</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
-          <button
+          <div>
+            <label className={styles.label}>Current Status</label>
+            <select
+              value={status}
+              className={styles.input}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+        </div>
+
+        <Input
+          label="Task Title"
+          id="edit-title"
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+
+        <Input
+          label="Focused Duration Block"
+          id="edit-duration"
+          type="time"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          required
+        />
+
+        <div>
+          <label className={styles.label}>Log Development Notes</label>
+          <textarea
+            rows={4}
+            className={`${styles.input} resize-none`}
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="No notes appended..."
+          />
+        </div>
+
+        <Input
+          label="Reference Documentation URL"
+          id="edit-link"
+          type="url"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
+          placeholder="https://..."
+        />
+
+        <div className="flex items-center gap-3 pt-4 border-t border-zinc-800/80 mt-8">
+          <Button
             type="button"
             onClick={onClose}
-            className={`${styles.button.ghost} text-zinc-500 hover:text-white p-1`}
+            variant="secondary"
+            className="w-1/3"
           >
-            <X size={20} />
-          </button>
-        </header>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={styles.label}>Category Type</label>
-              <select
-                value={type}
-                className={styles.input}
-                onChange={(e) => setType(e.target.value)}
-              >
-                <option value="Development">Dev</option>
-                <option value="DSA">DSA</option>
-                <option value="Applications">Applications</option>
-                <option value="Learning">Learning</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className={styles.label}>Current Status</label>
-              <select
-                value={status}
-                className={styles.input}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className={styles.label}>Task Title</label>
-            <input
-              className={styles.input}
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className={styles.label}>Focused Duration Block</label>
-            <input
-              className={styles.input}
-              type="time"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className={styles.label}>Log Development Notes</label>
-            <textarea
-              rows={4}
-              className={`${styles.input} resize-none`}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="No notes appended..."
-            />
-          </div>
-
-          <div>
-            <label className={styles.label}>Reference Documentation URL</label>
-            <input
-              type="url"
-              className={styles.input}
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              placeholder="https://..."
-            />
-          </div>
-
-          <div className="flex items-center gap-3 pt-4 border-t border-zinc-800/80 mt-8">
-            <button
-              type="button"
-              onClick={onClose}
-              className={`${styles.button.secondary} w-1/3`}
-            >
-              Cancel
-            </button>
-            <button
-              className={`${styles.button.primary} w-2/3`}
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                "Updating changes..."
-              ) : (
-                <>
-                  <Save size={14} /> Save Modifications
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            className="w-2/3"
+            loading={loading}
+            iconBefore={<Save size={14} />}
+          >
+            Save Modifications
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 };
 

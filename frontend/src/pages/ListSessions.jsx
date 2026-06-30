@@ -10,12 +10,12 @@ import {
   Edit2,
   Trash2,
   ExternalLink,
-  MoveLeft,
-  MoveRight,
 } from "lucide-react";
 import styles from "../utils/styles";
 import { useAuth } from "../context/AuthProvider";
 import SessionChart from "../components/SessionChart";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 
 const Tag = ({ type }) => {
   const base =
@@ -220,28 +220,28 @@ const ListSessions = () => {
   return (
     <div className="space-y-8 flex-1 flex flex-col">
       <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-        <div className={`${styles.card} p-5`}>
+        <Card>
           <p className={styles.label}>Logged Blocks</p>
           <p className="text-3xl font-extrabold mt-1.5">{totalSessions}</p>
-        </div>
-        <div className={`${styles.card} p-5`}>
+        </Card>
+        <Card>
           <p className={styles.label}>DSA Count</p>
           <p className="text-3xl font-extrabold mt-1.5 text-purple-400">
             {dsaCount}
           </p>
-        </div>
-        <div className={`${styles.card} p-5`}>
+        </Card>
+        <Card>
           <p className={styles.label}>Dev Metrics</p>
           <p className="text-3xl font-extrabold mt-1.5 text-emerald-400">
             {devCount}
           </p>
-        </div>
-        <div className={`${styles.card} p-5`}>
+        </Card>
+        <Card>
           <p className={styles.label}>Total Focused Hours</p>
           <p className="text-3xl font-extrabold mt-1.5 text-blue-400">
             {`${hours}H${minutes}M`}
           </p>
-        </div>
+        </Card>
       </section>
 
       <section className="mb-6 rounded-xl border border-neutral-800/60 bg-[#111111] p-5 shadow-xl">
@@ -319,8 +319,9 @@ const ListSessions = () => {
         </div>
       </section>
 
-      <section
-        className={`${styles.card} overflow-hidden flex-1 flex flex-col min-h-[300px]`}
+      <Card
+        noPadding
+        className="overflow-hidden flex-1 flex flex-col min-h-[300px]"
       >
         {loading ? (
           <div className="flex-1 flex items-center justify-center p-20">
@@ -479,7 +480,7 @@ const ListSessions = () => {
             No Sessions Found!
           </div>
         )}
-      </section>
+      </Card>
 
       {isModalOpen && selectedSession && (
         <EditSessionModal
